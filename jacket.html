@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Page</title>
+  <link rel="stylesheet" href="cartcss.css">
+</head>
+<body>
+  <div class="product-page">
+    <h1 id="product-name">Beige Woolen Jacket</h1>
+    <img src="jacket2.jpeg" alt="Beige Woolen Jacket">
+    <p><strong>Brand:</strong> Michael Kors</p>
+    <p><strong>Price:</strong> ₹<span id="product-price">3500</span></p>
+    <p><strong>Description:</strong> A stylish beige woolen jacket perfect for business meetings and casual outings.</p>
+    <p><strong>Size: S/M/L/XL</strong></p>
+    <p><strong>Availability: In Stock(8)</strong></p>
+    <button onclick="addToCart()">Add to Cart</button>
+  </div>
+
+  <div id="cart" class="cart-container">
+    <div id="cart-content" class="cart-content">
+      <h2>Cart</h2>
+      <ul id="cart-items"></ul>
+      <p id="grand-total"></p>
+      <button id="proceed-btn" onclick="proceedToPayment()" style="display:none;">Proceed to Payment</button>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function addToCart() {
+      const productName = document.getElementById('product-name').textContent;
+      const productPrice = parseInt(document.getElementById('product-price').textContent);
+      cart.push({ product: productName, price: productPrice });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      displayNotification(`${productName} added to cart.`);
+      displayCart();
+      showCart();
+      document.getElementById('proceed-btn').style.display = 'block';
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      displayNotification(`Item removed from cart.`);
+      displayCart();
+      if (cart.length === 0) {
+        hideCart();
+        document.getElementById('proceed-btn').style.display = 'none';
+      }
+    }
+
+    function displayCart() {
+      const cartItems = document.getElementById('cart-items');
+      const grandTotal = document.getElementById('grand-total');
+      cartItems.innerHTML = '';
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.product} - ₹${item.price}`;
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = () => removeFromCart(index);
+        li.appendChild(removeButton);
+        cartItems.appendChild(li);
+        total += item.price;
+      });
+
+      grandTotal.textContent = `Grand Total: ₹${total}`;
+    }
+
+    function displayNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    function showCart() {
+      const cartContainer = document.getElementById('cart');
+      cartContainer.style.display = 'block';
+      displayCart();
+    }
+
+    function hideCart() {
+      const cartContainer = document.getElementById('cart');
+      cartContainer.style.display = 'none';
+    }
+
+    function proceedToPayment() {
+      // Implement your logic to proceed to payment
+      alert('Proceeding to payment...');
+    }
+
+    // Show cart if there are items in it
+    if (cart.length > 0) {
+      showCart();
+      document.getElementById('proceed-btn').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
